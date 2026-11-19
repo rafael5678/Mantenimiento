@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PITAYA · Predictive Investment, Testing & Attribution for Yield Analytics</title>
+  
+  <!-- Tipografía Editorial y Tecnológica de Alta Precisión -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- Three.js para Escena 3D Cinemática Interactiva -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       VARIABLES Y TEMAS VISUALES CON PALETAS OFICIALES DE PITAYA
+       ========================================================================== */
+    :root {
+      --bg-base: #0c0d14;
+      --bg-gradient: radial-gradient(ellipse at 50% 30%, #1a1728 0%, #0c0d14 70%, #05050a 100%);
+      --text-main: #f5f4f8;
+      --text-muted: #b5b4c6;
+      --accent: #e0549a;
+      --accent-glow: rgba(224, 84, 154, 0.4);
+      --card-bg: rgba(22, 22, 34, 0.72);
+      --card-border: rgba(224, 84, 154, 0.22);
+      --chip-bg: rgba(224, 84, 154, 0.12);
+      --chip-border: rgba(224, 84, 154, 0.38);
+      --line: rgba(255, 255, 255, 0.12);
+      --hud-bg: rgba(10, 11, 18, 0.84);
+      --hud-border: rgba(255, 255, 255, 0.09);
+      
+      /* Colores fijos de campaña de PITAYA */
+      --c-916: #e0549a;
+      --c-916-glow: rgba(224, 84, 154, 0.35);
+      --c-936: #9c86f5;
+      --c-936-glow: rgba(156, 134, 245, 0.35);
+      --c-1178: #3fb8c9;
+      --c-1178-glow: rgba(63, 184, 201, 0.35);
+      
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-heading: 'Syne', sans-serif;
+      --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --transition-theme: background 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.6s ease;
+    }
+
+    /* Tema 1: Portada Pitaya Magenta */
+    body[data-theme="pitaya"] {
+      --bg-base: #0c0d14;
+      --bg-gradient: radial-gradient(ellipse at 50% 35%, #241322 0%, #0c0d14 70%, #050608 100%);
+      --text-main: #faf5f8;
+      --text-muted: #c4b5bf;
+      --accent: #e0549a;
+      --accent-glow: rgba(224, 84, 154, 0.42);
+      --card-bg: rgba(26, 18, 28, 0.72);
+      --card-border: rgba(224, 84, 154, 0.25);
+      --chip-bg: rgba(224, 84, 154, 0.14);
+      --chip-border: rgba(224, 84, 154, 0.4);
+      --line: rgba(224, 84, 154, 0.2);
+    }
+
+    /* Tema 2: Dataset & Calidad (Ámbar / Oro) */
+    body[data-theme="data"] {
+      --bg-base: #14100a;
+      --bg-gradient: radial-gradient(ellipse at 50% 30%, #2b1f0e 0%, #14100a 70%, #080603 100%);
+      --text-main: #fdf7eb;
+      --text-muted: #d8c6aa;
+      --accent: #f2b84b;
+      --accent-glow: rgba(242, 184, 75, 0.45);
+      --card-bg: rgba(38, 27, 15, 0.72);
+      --card-border: rgba(242, 184, 75, 0.26);
+      --chip-bg: rgba(242, 184, 75, 0.14);
+      --chip-border: rgba(242, 184, 75, 0.42);
+      --line: rgba(242, 184, 75, 0.2);
+    }
+
+    /* Tema 3: Arquitectura & Pipelines (Esmeralda / Menta) */
+    body[data-theme="arch"] {
+      --bg-base: #061510;
+      --bg-gradient: radial-gradient(ellipse at 50% 30%, #0c2e22 0%, #061510 70%, #020a07 100%);
+      --text-main: #f2fcf6;
+      --text-muted: #b4dfcc;
+      --accent: #3dbe8b;
+      --accent-glow: rgba(61, 190, 139, 0.45);
+      --card-bg: rgba(12, 38, 29, 0.72);
+      --card-border: rgba(61, 190, 139, 0.28);
+      --chip-bg: rgba(61, 190, 139, 0.14);
+      --chip-border: rgba(61, 190, 139, 0.42);
+      --line: rgba(61, 190, 139, 0.22);
+    }
+
+    /* Tema 4: Modelos & Benchmarking (Cian & Índigo) */
+    body[data-theme="models"] {
+      --bg-base: #061320;
+      --bg-gradient: radial-gradient(ellipse at 50% 30%, #0d263e 0%, #061320 70%, #02070d 100%);
+      --text-main: #f0f8ff;
+      --text-muted: #b4ceea;
+      --accent: #3fb8c9;
+      --accent-glow: rgba(63, 184, 201, 0.45);
+      --card-bg: rgba(12, 34, 56, 0.72);
+      --card-border: rgba(63, 184, 201, 0.28);
+      --chip-bg: rgba(63, 184, 201, 0.14);
+      --chip-border: rgba(63, 184, 201, 0.42);
+      --line: rgba(63, 184, 201, 0.22);
+    }
+
+    /* Tema 5: Módulos Decisionales (Púrpura & Violeta) */
+    body[data-theme="decision"] {
+      --bg-base: #0f0b1c;
+      --bg-gradient: radial-gradient(ellipse at 50% 30%, #20153c 0%, #0f0b1c 70%, #06040b 100%);
+      --text-main: #f7f4fc;
+      --text-muted: #cac0de;
+      --accent: #9c86f5;
+      --accent-glow: rgba(156, 134, 245, 0.45);
+      --card-bg: rgba(28, 19, 52, 0.72);
+      --card-border: rgba(156, 134, 245, 0.28);
+      --chip-bg: rgba(156, 134, 245, 0.14);
+      --chip-border: rgba(156, 134, 245, 0.42);
+      --line: rgba(156, 134, 245, 0.22);
+    }
+
+    /* Tema 6: Despliegue & Demo en Vivo (Tecnológico Violeta / Neón) */
+    body[data-theme="demo"] {
+      --bg-base: #100b1a;
+      --bg-gradient: radial-gradient(ellipse at 50% 30%, #231238 0%, #100b1a 70%, #07030c 100%);
+      --text-main: #f8f3fa;
+      --text-muted: #cfbfd8;
+      --accent: #b070f8;
+      --accent-glow: rgba(176, 112, 248, 0.45);
+      --card-bg: rgba(30, 18, 50, 0.72);
+      --card-border: rgba(176, 112, 248, 0.28);
+      --chip-bg: rgba(176, 112, 248, 0.14);
+      --chip-border: rgba(176, 112, 248, 0.42);
+      --line: rgba(176, 112, 248, 0.22);
+    }
+
+    /* Tema 7: Auditoría & Límites (Coral Crítico / Diagnóstico) */
+    body[data-theme="audit"] {
+      --bg-base: #17090b;
+      --bg-gradient: radial-gradient(ellipse at 50% 30%, #351318 0%, #17090b 70%, #0b0204 100%);
+      --text-main: #fdf2f3;
+      --text-muted: #e0b6b9;
+      --accent: #f0707f;
+      --accent-glow: rgba(240, 112, 127, 0.45);
+      --card-bg: rgba(46, 18, 24, 0.72);
+      --card-border: rgba(240, 112, 127, 0.28);
+      --chip-bg: rgba(240, 112, 127, 0.14);
+      --chip-border: rgba(240, 112, 127, 0.42);
+      --line: rgba(240, 112, 127, 0.22);
+    }
+
+    /* Tema 8: Conclusiones & Roadmap (Magenta Futuro) */
+    body[data-theme="roadmap"] {
+      --bg-base: #0c0d14;
+      --bg-gradient: radial-gradient(ellipse at 50% 35%, #25122b 0%, #0c0d14 70%, #040508 100%);
+      --text-main: #faf5f8;
+      --text-muted: #c5b5c3;
+      --accent: #e0549a;
+      --accent-glow: rgba(224, 84, 154, 0.45);
+      --card-bg: rgba(26, 18, 32, 0.72);
+      --card-border: rgba(224, 84, 154, 0.26);
+      --chip-bg: rgba(224, 84, 154, 0.14);
+      --chip-border: rgba(224, 84, 154, 0.42);
+      --line: rgba(224, 84, 154, 0.22);
+    }
+
+    /* Reset y Base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-body);
+      background-color: var(--bg-base);
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      transition: var(--transition-theme);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+    }
+
+    /* Atmósfera Visual */
+    .film-grain {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.68) 100%);
+    }
+
+    .glow-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(85px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.45;
+      transition: background 0.8s ease, transform 1.2s ease;
+      animation: floatBreath 12s ease-in-out infinite alternate;
+    }
+    .glow-orb.top-right {
+      width: 460px;
+      height: 460px;
+      top: -120px;
+      right: -80px;
+      background: var(--accent-glow);
+    }
+    .glow-orb.bottom-left {
+      width: 400px;
+      height: 400px;
+      bottom: -130px;
+      left: -90px;
+      background: var(--accent-glow);
+      animation-delay: -5s;
+    }
+
+    @keyframes floatBreath {
+      0% { transform: scale(1) translate(0, 0); opacity: 0.35; }
+      50% { transform: scale(1.15) translate(20px, 30px); opacity: 0.55; }
+      100% { transform: scale(0.95) translate(-15px, 15px); opacity: 0.38; }
+    }
+
+    .pulse-line {
+      position: fixed;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 90px;
+      z-index: 1;
+      opacity: 0.18;
+      pointer-events: none;
+      transform: translateY(-50%);
+    }
+    .pulse-line path {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 2;
+      stroke-dasharray: 200 800;
+      animation: pulseSweep 3.8s linear infinite;
+      transition: stroke 0.8s ease;
+    }
+    @keyframes pulseSweep {
+      to { stroke-dashoffset: -1000; }
+    }
+
+    #webgl-bg {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Cursor Magnético Interactivo */
+    .custom-cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 6px;
+      background-color: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: background-color 0.4s ease, transform 0.08s ease;
+    }
+    .custom-cursor-follower {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 32px;
+      height: 32px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s ease, height 0.3s ease, border-color 0.4s ease, background 0.3s ease;
+    }
+    .custom-cursor-follower.hovered {
+      width: 56px;
+      height: 56px;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: #ffffff;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Cabecera Superior */
+    .deck-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      padding: 0 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 50;
+      background: linear-gradient(180deg, rgba(10,11,18,0.85) 0%, rgba(10,11,18,0) 100%);
+      backdrop-filter: blur(10px);
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .live-beacon {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 14px var(--accent);
+      position: relative;
+      transition: background 0.6s ease, box-shadow 0.6s ease;
+    }
+    .live-beacon::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      animation: beaconPulse 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+    }
+    @keyframes beaconPulse {
+      0% { transform: scale(0.9); opacity: 0.9; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 15px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      opacity: 0.85;
+      text-transform: uppercase;
+      display: block;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .key-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      border-radius: 6px;
+      background: var(--hud-bg);
+      border: 1px solid var(--hud-border);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .key-badge kbd {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+      font-weight: 700;
+      font-family: inherit;
+    }
+    .btn-action {
+      background: var(--hud-bg);
+      border: 1px solid var(--hud-border);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      transition: all 0.25s ease;
+    }
+    .btn-action:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* Deck y Slides */
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 76px 72px 94px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(60px) scale(0.97);
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+    }
+    .slide.exit-left {
+      opacity: 0;
+      transform: translateX(-60px) scale(0.97);
+    }
+
+    .kicker {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+    }
+    .kicker-tag {
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+    }
+
+    h1, h2 {
+      margin: 0 0 10px 0;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(34px, 4.4vw, 56px);
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+      font-family: inherit;
+      font-weight: 600;
+    }
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 3.4vw, 42px);
+    }
+    h2 em {
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .lede {
+      font-size: clamp(14px, 1.25vw, 17px);
+      color: var(--text-muted);
+      max-width: 900px;
+      line-height: 1.48;
+      font-weight: 400;
+      margin-bottom: 18px;
+    }
+
+    /* Grillas y Layouts */
+    .grid {
+      display: grid;
+      gap: 16px;
+      width: 100%;
+      max-width: 1320px;
+    }
+    .g-4 { grid-template-columns: repeat(4, 1fr); }
+    .g-3 { grid-template-columns: repeat(3, 1fr); }
+    .g-2 { grid-template-columns: repeat(2, 1fr); }
+    .g-split-3-2 { grid-template-columns: 1.1fr 0.9fr; }
+
+    /* Tarjetas de Vidrio */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px 22px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.6;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 26px 55px rgba(0, 0, 0, 0.55), 0 0 24px var(--accent-glow);
+    }
+    .card-header-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .card h3 {
+      font-family: var(--font-heading);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .card p {
+      font-size: 13.5px;
+      line-height: 1.48;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .card p:last-child {
+      margin-bottom: 0;
+    }
+    .card ul {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .card li {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--text-muted);
+      position: relative;
+      padding-left: 17px;
+    }
+    .card li::before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      top: 1px;
+      font-size: 8.5px;
+      color: var(--accent);
+    }
+    .card b {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* KPI Highlights */
+    .kpi-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin: 6px 0;
+    }
+    .kpi-val {
+      font-family: var(--font-display);
+      font-size: clamp(26px, 2.4vw, 36px);
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1;
+    }
+    .kpi-unit {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Código de Color Fijo de Campañas */
+    .camp-card-916 {
+      border-color: rgba(224, 84, 154, 0.35);
+      background: rgba(36, 18, 30, 0.7);
+    }
+    .camp-card-916::before { background: linear-gradient(90deg, transparent, var(--c-916), transparent); }
+    .camp-card-916:hover { border-color: var(--c-916); box-shadow: 0 24px 50px rgba(0,0,0,0.5), 0 0 20px var(--c-916-glow); }
+    .camp-badge-916 { color: var(--c-916); background: rgba(224, 84, 154, 0.15); border-color: rgba(224, 84, 154, 0.4); }
+
+    .camp-card-936 {
+      border-color: rgba(156, 134, 245, 0.35);
+      background: rgba(24, 18, 44, 0.7);
+    }
+    .camp-card-936::before { background: linear-gradient(90deg, transparent, var(--c-936), transparent); }
+    .camp-card-936:hover { border-color: var(--c-936); box-shadow: 0 24px 50px rgba(0,0,0,0.5), 0 0 20px var(--c-936-glow); }
+    .camp-badge-936 { color: var(--c-936); background: rgba(156, 134, 245, 0.15); border-color: rgba(156, 134, 245, 0.4); }
+
+    .camp-card-1178 {
+      border-color: rgba(63, 184, 201, 0.35);
+      background: rgba(14, 30, 46, 0.7);
+    }
+    .camp-card-1178::before { background: linear-gradient(90deg, transparent, var(--c-1178), transparent); }
+    .camp-card-1178:hover { border-color: var(--c-1178); box-shadow: 0 24px 50px rgba(0,0,0,0.5), 0 0 20px var(--c-1178-glow); }
+    .camp-badge-1178 { color: var(--c-1178); background: rgba(63, 184, 201, 0.15); border-color: rgba(63, 184, 201, 0.4); }
+
+    /* Expositores Banner */
+    .presenters-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 14px;
+      width: 100%;
+      max-width: 1320px;
+    }
+    .presenter-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.3s ease;
+    }
+    .presenter-card.highlight {
+      border-color: var(--accent);
+      background: rgba(224, 84, 154, 0.1);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .presenter-role {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .presenter-name {
+      font-family: var(--font-heading);
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .presenter-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Tablas Compactas de Métricas */
+    .table-tech {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      margin-top: 8px;
+    }
+    .table-tech th {
+      text-align: left;
+      padding: 6px 8px;
+      color: var(--accent);
+      border-bottom: 1px solid var(--line);
+      font-weight: 600;
+    }
+    .table-tech td {
+      padding: 6px 8px;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .table-tech tr:last-child td {
+      border-bottom: none;
+    }
+    .table-tech tr:hover td {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* Chips y Badges */
+    .chips-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* Barra Inferior (HUD Bar) */
+    .deck-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      padding: 0 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 50;
+      background: var(--hud-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-top: 1px solid var(--hud-border);
+    }
+    .hud-counter {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .hud-num {
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent);
+      transition: color 0.5s ease;
+    }
+    .hud-total {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-muted);
+      opacity: 0.65;
+    }
+    .hud-section-name {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+
+    .dots-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dot-item {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .dot-item:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(1.2);
+    }
+    .dot-item.active {
+      width: 28px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--hud-border);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.25s ease;
+    }
+    .btn-nav:hover:not(:disabled) {
+      background: var(--accent);
+      color: #0c0d14;
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .btn-nav:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .deck-header { padding: 0 20px; height: 60px; }
+      .deck-bar { padding: 0 20px; height: 64px; }
+      .slide { padding: 68px 20px 76px; }
+      .g-4, .g-3, .g-2, .g-split-3-2 { grid-template-columns: 1fr; }
+      .presenters-row { grid-template-columns: 1fr; }
+      .hud-section-name { display: none; }
+      .card { padding: 16px 18px; }
+    }
+  </style>
+</head>
+<body data-theme="pitaya">
+
+  <!-- Capas Visuales de Fondo Cinemático -->
+  <div class="film-grain"></div>
+  <div class="vignette"></div>
+  <div class="glow-orb top-right"></div>
+  <div class="glow-orb bottom-left"></div>
+
+  <!-- Trazo Animado de Pulso Tecnológico -->
+  <svg class="pulse-line" viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,40 L160,40 L180,18 L200,62 L220,24 L240,46 L260,40 L460,40 L480,15 L505,68 L525,20 L545,46 L570,40 L780,40 L800,18 L820,62 L840,24 L860,46 L880,40 L1080,40 L1100,15 L1125,68 L1145,20 L1165,46 L1200,40" />
+  </svg>
+
+  <!-- Escenario 3D Three.js Dinámico -->
+  <div id="webgl-bg"></div>
+
+  <!-- Cursor Magnético Follower -->
+  <div class="custom-cursor-dot" id="cursorDot"></div>
+  <div class="custom-cursor-follower" id="cursorFollower"></div>
+
+  <!-- CABECERA SUPERIOR EDITORIAL -->
+  <header class="deck-header">
+    <div class="header-brand">
+      <div class="live-beacon"></div>
+      <div>
+        <span class="brand-title">PITAYA · Machine Learning & Attribution</span>
+        <span class="brand-sub">pitaya-nine.vercel.app // API: /v1 // Arquitectura Full-Stack</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="../index.html" class="btn-action" title="Volver al Selector Principal" style="text-decoration:none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <span>Hub Selector</span>
+      </a>
+      <div class="key-badge">
+        <kbd>←</kbd><kbd>→</kbd> Navegar
+      </div>
+      <div class="key-badge">
+        <kbd>1-8</kbd> Diapositivas
+      </div>
+      <button type="button" class="btn-action" id="fullscreenBtn" title="Alternar Pantalla Completa (F)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+        <span id="fsText">Pantalla completa</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- DECK PRINCIPAL: 8 DIAPOSITIVAS EXACTAS -->
+  <main class="deck">
+
+    <!-- =====================================================================
+         DIAPOSITIVA 1: PORTADA EJECUTIVA
+         ===================================================================== -->
+    <section class="slide active" data-theme="pitaya" data-name="Portada Ejecutiva">
+      <p class="kicker">
+        <span>01 · ARQUITECTURA PREDICTIVA & MARKETING SCIENCE</span>
+        <span class="kicker-tag">FastAPI + Next.js 16 + scikit-learn</span>
+      </p>
+      <h1>PITAYA<br><em>Predictive Investment, Testing & Attribution for Yield Analytics</em></h1>
+      <p class="lede">
+        Sistema desacoplado de analítica avanzada para campañas de Facebook Ads. Responde con rigor matemático y estadístico a las cuatro preguntas críticas de asignación de capital publicitario:
+      </p>
+
+      <!-- 4 Preguntas Clave -->
+      <div class="grid g-4">
+        <article class="card">
+          <div class="card-header-line">
+            <h3>1. Conversión</h3>
+            <span class="card-badge">ML Inflight</span>
+          </div>
+          <div class="kpi-row">
+            <span class="kpi-val">¿Cuáles?</span>
+          </div>
+          <p>Identificación binaria de anuncios con probabilidad real de generar <b>conversiones aprobadas</b> mediante ensembles calibrados.</p>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>2. Rentabilidad</h3>
+            <span class="card-badge">Financiero</span>
+          </div>
+          <div class="kpi-row">
+            <span class="kpi-val">1.49×</span>
+            <span class="kpi-unit">ROAS</span>
+          </div>
+          <p>Retorno global sobre inversión con punto de equilibrio en <b>US$ 33.54</b> frente al valor de referencia de US$ 50/aprobación.</p>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>3. Hipótesis A/B</h3>
+            <span class="card-badge">Estadística</span>
+          </div>
+          <div class="kpi-row">
+            <span class="kpi-val">Holm-Bonf.</span>
+          </div>
+          <p>Detección de diferencias significativas en CTR/CVR corrigiendo el error por comparaciones múltiples (FWER).</p>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>4. Presupuesto</h3>
+            <span class="card-badge">Optimización</span>
+          </div>
+          <div class="kpi-row">
+            <span class="kpi-val">Marginal</span>
+          </div>
+          <p>Asignación algorítmica con curva de rendimientos decrecientes y contracción empírica <b>Beta-Binomial</b>.</p>
+        </article>
+      </div>
+
+      <!-- Equipo de Expositores -->
+      <div class="presenters-row">
+        <div class="presenter-card">
+          <span class="presenter-role">Expositor 1</span>
+          <span class="presenter-name">Fundamentos & Arquitectura</span>
+          <span class="presenter-desc">Problema de negocio, calidad del dataset de Kaggle, prevención de leakage y pipeline hexagonal en FastAPI.</span>
+        </div>
+        <div class="presenter-card">
+          <span class="presenter-role">Expositor 2</span>
+          <span class="presenter-name">Modelado & Sistemas Decisionales</span>
+          <span class="presenter-desc">Validación ROC-AUC, contraste de campañas (916/936/1178), Atribución Shapley y recomendador de capital.</span>
+        </div>
+        <div class="presenter-card highlight">
+          <span class="presenter-role">Expositor 3 · Cierre Técnico</span>
+          <span class="presenter-name">Juan Rafael Calzada González</span>
+          <span class="presenter-desc">Despliegue Full-Stack (8000/3000), demo en vivo vista por vista, auditoría SQLite vs. Memoria y límites de ingeniería.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DIAPOSITIVA 2: PROBLEMA DE NEGOCIO, DATASET Y CALIDAD [EXPOSITOR 1]
+         ===================================================================== -->
+    <section class="slide" data-theme="data" data-name="Dataset & Calidad">
+      <p class="kicker">
+        <span>02 · EXPOSITOR 1 · FUNDAMENTOS DE DATOS</span>
+        <span class="kicker-tag">Kaggle: madislemsalu/facebook-ad-campaign</span>
+      </p>
+      <h2>Del Dataset en Bruto al <em>Corpus Consolidado de 761 Anuncios</em></h2>
+      <p class="lede">
+        Auditoría rigurosa del dataset público a nivel de anuncio individual. Filtrado automatizado mediante <code>make ingest</code> y validación con <code>quality_report.json</code> para erradicar inconsistencias.
+      </p>
+
+      <div class="grid g-3">
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Limpieza & Calidad</h3>
+            <span class="card-badge">761 Filas</span>
+          </div>
+          <ul>
+            <li><b>1,143 registros brutos:</b> Reducidos a <b>761 anuncios curados</b> tras descartar 382 filas mal alineadas (campañas inválidas y aprobadas nulas).</li>
+            <li><b>Integridad lógica 100%:</b> Cero clics superiores a impresiones (<code>Clicks &le; Impressions</code>) y conversiones aprobadas menores al total (<code>Approved &le; Total</code>).</li>
+            <li><b>0 duplicados:</b> Identificadores de anuncio únicos verificados por hash SHA256 criptográfico.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Métricas Financieras</h3>
+            <span class="card-badge">Baseline US$ 50</span>
+          </div>
+          <div class="kpi-row">
+            <span class="kpi-val">$19.6k</span>
+            <span class="kpi-unit">Gasto Total</span>
+          </div>
+          <ul>
+            <li><b>585 conversiones aprobadas:</b> Con valor configurado de US$ 50 generan un ingreso estimado de <b>US$ 29,250.00</b>.</li>
+            <li><b>ROAS Global de 1.49×:</b> Rentabilidad positiva neta del ecosistema publicitario.</li>
+            <li><b>Punto de equilibrio exacto:</b> CPA global límite de <b>US$ 33.54</b>. Por encima de este valor de aprobación, el sistema entra en déficit.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>3 Límites Estructurales</h3>
+            <span class="card-badge">Ausencias Clave</span>
+          </div>
+          <ul>
+            <li><b>Sin timestamps ni tracking:</b> No existe fecha ni recorrido longitudinal por persona; no se pueden reconstruir trayectorias cronológicas individuales.</li>
+            <li><b>Sin ingreso real directo:</b> Kaggle reporta conversiones sin ticket monetario; el ROI depende del valor asignado por el usuario.</li>
+            <li><b>Naturaleza observacional:</b> Asignación de subasta sin aleatorización experimental controlada (no es un RCT).</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DIAPOSITIVA 3: ESTRATEGIA DE MODELADO Y ARQUITECTURA MODULAR [EXPOSITOR 1]
+         ===================================================================== -->
+    <section class="slide" data-theme="arch" data-name="Arquitectura & Modelado">
+      <p class="kicker">
+        <span>03 · EXPOSITOR 1 · MACHINE LEARNING & BACKEND</span>
+        <span class="kicker-tag">FastAPI + Scikit-Learn Pipelines</span>
+      </p>
+      <h2>Prevención de Data Leakage & <em>Arquitectura Hexagonal Modular</em></h2>
+      <p class="lede">
+        Diseño desacoplado donde el navegador no realiza cómputos pesados. Next.js renderiza la UI mientras FastAPI procesa la lógica a través de 6 módulos de dominio y modelos serializados offline.
+      </p>
+
+      <div class="grid g-3">
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Prevención de Leakage</h3>
+            <span class="card-badge">Target Binario</span>
+          </div>
+          <ul>
+            <li><b>Regla de oro:</b> <code>Total_Conversion</code> jamás ingresa al espacio de variables predictivas, pues ya contiene las aprobadas.</li>
+            <li><b>Objetivo de clasificación:</b> <code>converted = (Approved_Conversion > 0)</code>.</li>
+            <li><b>Preprocesamiento encapsulado:</b> Imputación y escalado integrados dentro del propio <code>Pipeline</code> de scikit-learn para blindar la validación cruzada.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Dos Escenarios ML</h3>
+            <span class="card-badge">Offline Batch</span>
+          </div>
+          <ul>
+            <li><b>Pre-lanzamiento (Prelaunch):</b> Predicción <i>a priori</i> con variables de configuración demográfica (campaña, edad, género e interés).</li>
+            <li><b>En vuelo (Inflight):</b> Predicción dinámica <i>ex-post</i> integrando impresiones, clics, gasto y tasas emergentes de entrega.</li>
+            <li><b>Modelos evaluados:</b> Baseline Dummy, Regresión Logística, KNN, Random Forest y AdaBoost (empaquetados en <code>.joblib</code>).</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Arquitectura Hexagonal</h3>
+            <span class="card-badge">Sub-10ms API</span>
+          </div>
+          <ul>
+            <li><b>Rutas bajo <code>/v1</code>:</b> FastAPI orquesta las llamadas hacia una fachada que coordina 6 módulos autónomos: <code>catalog</code>, <code>modeling</code>, <code>performance</code>, <code>experiments</code>, <code>attribution</code> y <code>budget</code>.</li>
+            <li><b>Persistencia desacoplada:</b> SQLite en disco local (<code>data/pitaya.db</code>) vs. modo memoria efímera en despliegue serverless de Vercel.</li>
+            <li><b>Inmutabilidad:</b> Dataset y modelos viajan pre-serializados en el build; el entrenamiento ocurre fuera del ciclo HTTP.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DIAPOSITIVA 4: DESEMPEÑO POR CAMPAÑA Y BENCHMARK DE MODELOS [EXPOSITOR 2]
+         ===================================================================== -->
+    <section class="slide" data-theme="models" data-name="Modelos & Campañas">
+      <p class="kicker">
+        <span>04 · EXPOSITOR 2 · BENCHMARKING DE MODELOS</span>
+        <span class="kicker-tag">Stratified 5-Fold Cross Validation</span>
+      </p>
+      <h2>La Brecha de Eficiencia por Campaña & <em>Validación de Ensembles</em></h2>
+      <p class="lede">
+        Contraste empírico profundo entre los tres identificadores de campaña y evaluación estadística formal de los modelos supervisados frente a la frecuencia empírica real.
+      </p>
+
+      <div class="grid g-split-3-2">
+        <!-- Columna Izquierda: Código de Color de Campañas -->
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <article class="card camp-card-916">
+            <div class="card-header-line">
+              <h3 style="color: var(--c-916);">Campaña 916 · Círculo</h3>
+              <span class="card-badge camp-badge-916">54 Anuncios</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <div><b>Gasto:</b> US$ 149.71</div>
+              <div><b>Aprobadas:</b> 24</div>
+              <div style="font-family: var(--font-mono); font-weight: 700; color: var(--c-916);">CPA: US$ 6.24</div>
+            </div>
+            <p style="margin-top: 6px; font-size: 12.5px;">Hiper-eficiente pero de escala reducida. El costo por aprobación más bajo del portafolio.</p>
+          </article>
+
+          <article class="card camp-card-936">
+            <div class="card-header-line">
+              <h3 style="color: var(--c-936);">Campaña 936 · Cuadrado</h3>
+              <span class="card-badge camp-badge-936">464 Anuncios</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <div><b>Gasto:</b> US$ 2,893.37</div>
+              <div><b>Aprobadas:</b> 183</div>
+              <div style="font-family: var(--font-mono); font-weight: 700; color: var(--c-936);">CPA: US$ 15.81</div>
+            </div>
+            <p style="margin-top: 6px; font-size: 12.5px;">Campaña intermedia con el mayor volumen de anuncios y retorno consistente.</p>
+          </article>
+
+          <article class="card camp-card-1178">
+            <div class="card-header-line">
+              <h3 style="color: var(--c-1178);">Campaña 1178 · Diamante</h3>
+              <span class="card-badge camp-badge-1178">243 Anuncios</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+              <div><b>Gasto:</b> US$ 16,577.16</div>
+              <div><b>Aprobadas:</b> 378</div>
+              <div style="font-family: var(--font-mono); font-weight: 700; color: var(--c-1178);">CPA: US$ 43.85</div>
+            </div>
+            <p style="margin-top: 6px; font-size: 12.5px;">Concentra el 84% de la inversión. <b>~7× más costosa</b> por conversión aprobada que la campaña 916.</p>
+          </article>
+        </div>
+
+        <!-- Columna Derecha: Benchmarking y Prueba Pareada -->
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Benchmarking de Modelos</h3>
+            <span class="card-badge">manifest.json</span>
+          </div>
+          <table class="table-tech">
+            <thead>
+              <tr>
+                <th>Modelo (Inflight)</th>
+                <th>CV ROC-AUC</th>
+                <th>PR-AUC</th>
+                <th>Brier Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Regresión Logística</b></td>
+                <td style="color: #34d399;">0.6388</td>
+                <td>0.6660</td>
+                <td>0.2306</td>
+              </tr>
+              <tr>
+                <td><b>AdaBoost Classifier</b></td>
+                <td>0.6038</td>
+                <td>0.6310</td>
+                <td>0.2324</td>
+              </tr>
+              <tr>
+                <td><b>Random Forest</b></td>
+                <td>0.5960</td>
+                <td>0.6474</td>
+                <td>0.2338</td>
+              </tr>
+              <tr>
+                <td><b>K-Nearest Neighbors</b></td>
+                <td>0.5679</td>
+                <td>0.5485</td>
+                <td>0.2958</td>
+              </tr>
+              <tr>
+                <td><b>Baseline Dummy</b></td>
+                <td>0.5160</td>
+                <td>0.4704</td>
+                <td>0.4803</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top: 14px; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.35); border: 1px dashed var(--line);">
+            <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent); font-weight: 700; margin-bottom: 4px;">
+              PRUEBA PAREADA DE WILCOXON (RF vs. AdaBoost)
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 12px; color: var(--text-main);">
+              Estadístico: <b>W = 6.0</b> · Valor p: <b>0.8125</b> (> 0.05)
+            </div>
+            <p style="font-size: 12px; margin-top: 4px; color: var(--text-muted);">
+              No existe diferencia estadísticamente significativa en capacidad discriminativa entre ambos ensembles sobre los 5 folds.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DIAPOSITIVA 5: MÓDULOS INTERACTIVOS DE DECISIÓN [EXPOSITOR 2]
+         ===================================================================== -->
+    <section class="slide" data-theme="decision" data-name="Módulos Decisionales">
+      <p class="kicker">
+        <span>05 · EXPOSITOR 2 · SISTEMAS DECISIONALES</span>
+        <span class="kicker-tag">Shapley · Holm-Bonferroni · Beta-Binomial</span>
+      </p>
+      <h2>Módulos Analíticos de <em>Decisión y Asignación de Capital</em></h2>
+      <p class="lede">
+        Herramientas analíticas conectadas en tiempo real a la API para simulación interactiva, contraste experimental, atribución game-theoretic y optimización de presupuesto.
+      </p>
+
+      <div class="grid g-4">
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Simulador What-if</h3>
+            <span class="card-badge">/whatif</span>
+          </div>
+          <p>Permite proyectar el comportamiento de un anuncio hipotético.</p>
+          <ul>
+            <li><b>Pre-lanzamiento:</b> Inferencia demográfica <i>ex-ante</i>.</li>
+            <li><b>En vuelo:</b> Simulación con gasto proyectado y clics estimados.</li>
+            <li><b>Output:</b> Probabilidad de aprobación y ROAS esperado.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Pruebas A/B</h3>
+            <span class="card-badge">/ab</span>
+          </div>
+          <p>Contraste de hipótesis sobre CTR y CVR entre pares de campañas.</p>
+          <ul>
+            <li><b>Z-test de 2 proporciones:</b> Evaluación formal de hipótesis.</li>
+            <li><b>Holm-Bonferroni:</b> Corrección por comparaciones múltiples para controlar falsos positivos.</li>
+            <li><b>Veredicto:</b> Clasificación rigurosamente observacional.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Atribución Shapley</h3>
+            <span class="card-badge">/attribution</span>
+          </div>
+          <p>Teoría de juegos cooperativos sobre 4 factores macro:</p>
+          <ul>
+            <li><b>Factores:</b> Campaña, edad, género e interés mediante suma de cuadrados entre grupos.</li>
+            <li><b>Desglose visual:</b> Barras con color fijo: <b style="color:var(--c-916);">Rosa 916</b>, <b style="color:var(--c-936);">Violeta 936</b> y <b style="color:var(--c-1178);">Cian 1178</b>.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Recomendador</h3>
+            <span class="card-badge">/budget</span>
+          </div>
+          <p>Motor de asignación de capital con rendimientos decrecientes:</p>
+          <ul>
+            <li><b>Filtro &ge; 5 anuncios:</b> Descarta ruido en micro-segmentos.</li>
+            <li><b>Beta-Binomial:</b> Contracción bayesiana que suaviza CVR.</li>
+            <li><b>Curva cóncava:</b> Paginación de 12 filas e idempotencia contra duplicados.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DIAPOSITIVA 6: DESPLIEGUE TÉCNICO Y DEMO EN VIVO [EXPOSITOR 3 - JUAN CALZADA]
+         ===================================================================== -->
+    <section class="slide" data-theme="demo" data-name="Demo & Full-Stack">
+      <p class="kicker">
+        <span>06 · EXPOSITOR 3 · JUAN RAFAEL CALZADA GONZÁLEZ</span>
+        <span class="kicker-tag">Puertos 8000 & 3000 · Auditoría /status</span>
+      </p>
+      <h2>Despliegue Full-Stack & <em>Recorrido Técnico de la Demo</em></h2>
+      <p class="lede">
+        Ejecución local en dos planos sincronizados y flujo interactivo guiado por las 7 vistas operativas, validando en código cómo la vista Estado inspecciona la persistencia activa.
+      </p>
+
+      <div class="grid g-3">
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Topología Local Dual</h3>
+            <span class="card-badge">8000 + 3000</span>
+          </div>
+          <ul>
+            <li><b>Backend (Puerto 8000):</b> FastAPI ejecutado vía <code>uvicorn app.index:app --port 8000</code>. Documentación OpenAPI Swagger en <code>/docs</code> y validación con esquemas Pydantic v2.</li>
+            <li><b>Frontend (Puerto 3000):</b> Next.js 16 con App Router, React 19 y Tailwind CSS v4. Enrutamiento del lado del servidor y cliente con TanStack Query y Recharts.</li>
+            <li><b>Inyección de Servicio:</b> Variable <code>BACKEND_URL</code> inyectada dinámicamente para consumo interno de API.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Flujo de la Demo (7 Vistas)</h3>
+            <span class="card-badge">Live Walkthrough</span>
+          </div>
+          <ul>
+            <li><b>1. Resumen:</b> 4 cifras clave, desglose de campañas y ROAS 1.49×.</li>
+            <li><b>2. Modelos:</b> Comparativa ROC-AUC y prueba de Wilcoxon.</li>
+            <li><b>3. What-if:</b> Simulación pre-lanzamiento vs. en vuelo.</li>
+            <li><b>4. Pruebas A/B:</b> Z-test y Holm-Bonferroni en acción.</li>
+            <li><b>5. Atribución:</b> Coeficientes de Shapley exactos.</li>
+            <li><b>6. Recomendador:</b> Reparto marginal con rendimientos decrecientes.</li>
+            <li><b>7. Estado:</b> Telemetría de persistencia y snapshot en tiempo real.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Código de la Vista /status</h3>
+            <span class="card-badge">status.py Audit</span>
+          </div>
+          <ul>
+            <li><code>resolve_storage_mode()</code>: Determina si el backend corre con persistencia <code>sqlite</code> en disco o <code>memory</code> efímera.</li>
+            <li><code>durable_writes</code>: Booleano que certifica si el historial sobrevive al ciclo de vida del proceso.</li>
+            <li><code>snapshot_dataset_hash</code>: Valida la integridad del archivo <code>ads.csv</code> mediante hash SHA256 (<code>82b4d8b9...</code>).</li>
+            <li><code>sklearn_version_mismatch</code>: Compara la versión del runtime contra el <code>manifest.json</code> para prevenir fallos binarios en <code>.joblib</code>.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DIAPOSITIVA 7: AUDITORÍA DE LÍMITES METODOLÓGICOS E INFRAESTRUCTURA [EXPOSITOR 3 - JUAN CALZADA]
+         ===================================================================== -->
+    <section class="slide" data-theme="audit" data-name="Auditoría de Límites">
+      <p class="kicker">
+        <span>07 · EXPOSITOR 3 · JUAN RAFAEL CALZADA GONZÁLEZ</span>
+        <span class="kicker-tag">Auditoría Crítica de Ingeniería</span>
+      </p>
+      <h2>Fronteras del Sistema: <em>Límites Teóricos & Operacionales</em></h2>
+      <p class="lede">
+        Análisis crítico de los supuestos del modelo económico, la validez causal de las conclusiones y el comportamiento de la persistencia bajo el paradigma serverless de Vercel.
+      </p>
+
+      <div class="grid g-3">
+        <article class="card">
+          <div class="card-header-line">
+            <h3>1. Sensibilidad del ROAS</h3>
+            <span class="card-badge">Parámetro Exógeno</span>
+          </div>
+          <p>El retorno del <b>1.49×</b> y el break-even en <b>US$ 33.54</b> dependen enteramente de fijar US$ 50 por conversión aprobada:</p>
+          <ul>
+            <li><b>Sin ticket de compra real:</b> El dataset no contiene el valor monetario de lo comprado en cada conversión.</li>
+            <li><b>Vulnerabilidad paramétrica:</b> Si el negocio fija un valor de US$ 30, el ROAS cae a <b>0.89×</b> (operación en pérdidas).</li>
+            <li><b>Conclusión:</b> El cálculo es un escenario referencial sujeto a calibración del usuario.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>2. Sesgo Observacional</h3>
+            <span class="card-badge">No es un RCT</span>
+          </div>
+          <p>Las diferencias entre campañas no implican superioridad creativa o de producto:</p>
+          <ul>
+            <li><b>Falta de aleatorización:</b> Las campañas 916 (CPA US$ 6.24) y 1178 (CPA US$ 43.85) corrieron con presupuestos y audiencias dispares.</li>
+            <li><b>Factores de confusión:</b> Tamaño de mercado, estacionalidad y pujas en la subasta de Facebook sesgan el rendimiento.</li>
+            <li><b>Veredicto:</b> Los contrastes son asociativos/observacionales, no experimentos controlados de laboratorio.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>3. Cold Starts en Vercel</h3>
+            <span class="card-badge">Stateless Lambdas</span>
+          </div>
+          <p>Comportamiento del ciclo de vida en la nube pública (Vercel Serverless / modo <code>memory</code>):</p>
+          <ul>
+            <li><b>Arranque en frío (Cold start):</b> El historial de recomendaciones en memoria se pierde al destruirse la instancia inactiva.</li>
+            <li><b>Blindaje inmutable:</b> La analítica, los <b>761 anuncios curados</b> y los <b>10 modelos .joblib</b> sobreviven intactos porque viajan empaquetados en el snapshot del despliegue.</li>
+            <li><b>Resiliencia:</b> El sistema se reconstruye en milisegundos sin dependencia de base externa.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DIAPOSITIVA 8: CONCLUSIONES Y HOJA DE RUTA (ROADMAP) [EXPOSITOR 3 - JUAN CALZADA]
+         ===================================================================== -->
+    <section class="slide" data-theme="roadmap" data-name="Conclusiones & Roadmap">
+      <p class="kicker">
+        <span>08 · EXPOSITOR 3 · JUAN RAFAEL CALZADA GONZÁLEZ</span>
+        <span class="kicker-tag">Síntesis de Arquitectura & Evolución</span>
+      </p>
+      <h2>Conclusiones de Ingeniería & <em>Hoja de Ruta a Producción</em></h2>
+      <p class="lede">
+        Demostración del valor del desacoplamiento arquitectónico entre entrenamiento offline y servicio web, junto con el roadmap técnico para escalar PITAYA a grado empresarial.
+      </p>
+
+      <div class="grid g-3">
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Fase 1: Persistencia Cloud</h3>
+            <span class="card-badge">PostgreSQL / Supabase</span>
+          </div>
+          <ul>
+            <li><b>Migración de SQLite/Memoria:</b> Activación nativa de <code>STORAGE_MODE=postgres</code> ya preparado en la arquitectura hexagonal.</li>
+            <li><b>Durable Outbox Pattern:</b> Registro transaccional garantizado de recomendaciones y bitácora de auditoría histórica para clientes corporativos.</li>
+            <li><b>Connection Pooling:</b> PgBouncer para soportar concurrencia masiva sin saturar conexiones serverless.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Fase 2: Streaming & MTA</h3>
+            <span class="card-badge">Meta CAPI + Kafka</span>
+          </div>
+          <ul>
+            <li><b>Ingestión de Eventos en Vivo:</b> Conexión directa mediante webhooks de Meta Conversions API (CAPI) para capturar timestamps de compra reales.</li>
+            <li><b>Atribución Multi-Touch Dinámica:</b> Reemplazo de la atribución estática por Cadenas de Markov y modelos de decaimiento temporal.</li>
+            <li><b>Ventanas de Conversión:</b> Seguimiento longitudinal a 1, 7 y 28 días con ventana de post-impresión y post-clic.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="card-header-line">
+            <h3>Fase 3: Bandidos Multibrazo</h3>
+            <span class="card-badge">Adaptive Allocation</span>
+          </div>
+          <ul>
+            <li><b>Optimización Continua:</b> Evolución del recomendador estático hacia algoritmos de <i>Contextual Multi-Armed Bandits</i> (LinUCB / Thompson Sampling).</li>
+            <li><b>Exploración vs. Explotación:</b> Balanceo dinámico entre testear segmentos inexplorados y explotar las campañas más rentables en tiempo real.</li>
+            <li><b>Auto-Pujas Inteligentes:</b> Conexión automatizada para pausar anuncios con CPA degenerativo.</li>
+          </ul>
+        </article>
+      </div>
+
+      <!-- Barra de Accesos Directos -->
+      <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; border-radius: 14px; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--line); width: 100%; max-width: 1320px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-family: var(--font-mono); font-size: 11px; color: var(--accent); text-transform: uppercase; font-weight: 700;">ACCESOS OFICIALES:</span>
+          <span class="chip"><span class="chip-dot"></span>Producción: pitaya-nine.vercel.app</span>
+          <span class="chip"><span class="chip-dot"></span>Repo: github.com/Nicolas-12000/PITAYA</span>
+          <span class="chip"><span class="chip-dot"></span>Health API: /v1/health</span>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+          Presentación: <b>Juan Rafael Calzada González · 2026</b>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BARRA INFERIOR DE NAVEGACIÓN (HUD BAR) -->
+  <footer class="deck-bar">
+    <div class="hud-counter">
+      <span class="hud-num" id="slideIndexLabel">01</span>
+      <span class="hud-total">/ 08</span>
+      <span class="hud-section-name" id="slideNameLabel">Portada Ejecutiva</span>
+    </div>
+
+    <nav class="dots-nav" id="dotsNav" aria-label="Navegación de diapositivas"></nav>
+
+    <div class="hud-controls">
+      <button type="button" class="btn-nav" id="prevBtn" title="Diapositiva anterior (←)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <span>Anterior</span>
+      </button>
+      <button type="button" class="btn-nav" id="nextBtn" title="Diapositiva siguiente (→ o Espacio)">
+        <span>Siguiente</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+  </footer>
+
+  <!-- SCRIPT DE CONTROL, WAYPOINTS 3D Y ANIMACIONES -->
+  <script>
+    (function() {
+      // 1. Elementos del DOM
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const dotsNav = document.getElementById('dotsNav');
+      const slideIndexLabel = document.getElementById('slideIndexLabel');
+      const slideNameLabel = document.getElementById('slideNameLabel');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const fullscreenBtn = document.getElementById('fullscreenBtn');
+      const fsText = document.getElementById('fsText');
+      const cursorDot = document.getElementById('cursorDot');
+      const cursorFollower = document.getElementById('cursorFollower');
+
+      let currentIndex = 0;
+      const totalSlides = slides.length;
+
+      // 2. Generar Puntos de Navegación (Dots)
+      slides.forEach((slide, idx) => {
+        const dot = document.createElement('button');
+        dot.className = `dot-item ${idx === 0 ? 'active' : ''}`;
+        dot.type = 'button';
+        dot.title = `Ir a: ${slide.dataset.name || `Slide ${idx + 1}`}`;
+        dot.setAttribute('aria-label', `Diapositiva ${idx + 1}`);
+        dot.addEventListener('click', () => goToSlide(idx));
+        dotsNav.appendChild(dot);
+      });
+
+      const dotElements = Array.from(dotsNav.querySelectorAll('.dot-item'));
+
+      // 3. Waypoints para la Escena 3D Cinemática
+      const waypoints3D = [
+        { pos: [0, 0, 0], rotSpeed: 0.005, scale: 1.15, color: 0xe0549a },       // 1. Portada (Pitaya Magenta)
+        { pos: [2.3, 0.2, -0.6], rotSpeed: 0.008, scale: 1.25, color: 0xf2b84b },  // 2. Dataset & Calidad (Ámbar)
+        { pos: [2.5, 0.4, -0.8], rotSpeed: 0.009, scale: 1.20, color: 0x3dbe8b },  // 3. Arquitectura (Menta)
+        { pos: [2.2, -0.2, -0.6], rotSpeed: 0.007, scale: 1.22, color: 0x3fb8c9 }, // 4. Modelos (Cian)
+        { pos: [2.4, -0.3, -0.7], rotSpeed: 0.009, scale: 1.20, color: 0x9c86f5 }, // 5. Decisiones (Violeta)
+        { pos: [2.3, 0.1, -0.6], rotSpeed: 0.008, scale: 1.24, color: 0xb070f8 },  // 6. Demo & Full-Stack (DevOps)
+        { pos: [2.5, 0.3, -0.8], rotSpeed: 0.009, scale: 1.18, color: 0xf0707f },  // 7. Auditoría & Límites (Coral)
+        { pos: [0, -0.4, -1.1], rotSpeed: 0.005, scale: 1.12, color: 0xe0549a }   // 8. Roadmap & Cierre (Magenta)
+      ];
+
+      // 4. Función de Cambio de Diapositiva
+      function goToSlide(targetIndex, direction = 1) {
+        if (targetIndex < 0) targetIndex = totalSlides - 1;
+        if (targetIndex >= totalSlides) targetIndex = 0;
+
+        const currentSlide = slides[currentIndex];
+        const nextSlide = slides[targetIndex];
+
+        // Animar clases de salida y entrada
+        slides.forEach((s, idx) => {
+          if (idx === targetIndex) {
+            s.classList.remove('exit-left');
+            s.classList.add('active');
+          } else if (idx === currentIndex) {
+            s.classList.remove('active');
+            if (direction > 0) {
+              s.classList.add('exit-left');
+            } else {
+              s.classList.remove('exit-left');
+            }
+          } else {
+            s.classList.remove('active', 'exit-left');
+          }
+        });
+
+        // Actualizar Tema en el Body
+        const newTheme = nextSlide.dataset.theme || 'pitaya';
+        document.body.dataset.theme = newTheme;
+
+        // Actualizar HUD
+        currentIndex = targetIndex;
+        slideIndexLabel.textContent = String(currentIndex + 1).padStart(2, '0');
+        slideNameLabel.textContent = nextSlide.dataset.name || `Diapositiva ${currentIndex + 1}`;
+
+        dotElements.forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentIndex);
+        });
+
+        // Actualizar 3D Target
+        if (window.update3DWaypoint && waypoints3D[currentIndex]) {
+          window.update3DWaypoint(waypoints3D[currentIndex]);
+        }
+      }
+
+      // 5. Botones de Navegación
+      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1, -1));
+      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1, 1));
+
+      // 6. Controles de Teclado
+      document.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+        if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.code === 'Space' || e.key === 'Enter') {
+          e.preventDefault();
+          goToSlide(currentIndex + 1, 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+          e.preventDefault();
+          goToSlide(currentIndex - 1, -1);
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          goToSlide(0, -1);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          goToSlide(totalSlides - 1, 1);
+        } else if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          toggleFullscreen();
+        } else if (e.key >= '1' && e.key <= '8') {
+          const num = parseInt(e.key, 10) - 1;
+          if (num >= 0 && num < totalSlides) {
+            goToSlide(num, num > currentIndex ? 1 : -1);
+          }
+        }
+      });
+
+      // 7. Soporte para Gestos Táctiles (Swipe)
+      let touchStartX = 0;
+      let touchEndX = 0;
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      document.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diffX = touchEndX - touchStartX;
+        if (Math.abs(diffX) > 60) {
+          if (diffX < 0) goToSlide(currentIndex + 1, 1);
+          else goToSlide(currentIndex - 1, -1);
+        }
+      }, { passive: true });
+
+      // 8. Pantalla Completa
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+          if (fsText) fsText.textContent = 'Salir de pantalla';
+        } else {
+          document.exitFullscreen().catch(() => {});
+          if (fsText) fsText.textContent = 'Pantalla completa';
+        }
+      }
+      fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && fsText) {
+          fsText.textContent = 'Pantalla completa';
+        }
+      });
+
+      // 9. Cursor Magnético
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let followerX = mouseX;
+      let followerY = mouseY;
+
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (cursorDot) {
+          cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+        }
+      });
+
+      function renderCursor() {
+        followerX += (mouseX - followerX) * 0.16;
+        followerY += (mouseY - followerY) * 0.16;
+        if (cursorFollower) {
+          cursorFollower.style.transform = `translate(${followerX}px, ${followerY}px)`;
+        }
+        requestAnimationFrame(renderCursor);
+      }
+      renderCursor();
+
+      const interactives = document.querySelectorAll('button, a, .card, .chip, .dot-item, .presenter-card');
+      interactives.forEach(el => {
+        el.addEventListener('mouseenter', () => cursorFollower && cursorFollower.classList.add('hovered'));
+        el.addEventListener('mouseleave', () => cursorFollower && cursorFollower.classList.remove('hovered'));
+      });
+
+      // 10. Escena 3D con Three.js
+      const container3D = document.getElementById('webgl-bg');
+
+      if (window.THREE && container3D) {
+        try {
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+          camera.position.set(0, 0, 7.5);
+
+          const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          container3D.appendChild(renderer.domElement);
+
+          const group3D = new THREE.Group();
+
+          // Núcleo Icosaedro facetado
+          const coreGeo = new THREE.IcosahedronGeometry(1.6, 1);
+          const coreMat = new THREE.MeshPhongMaterial({
+            color: 0xe0549a,
+            emissive: 0x22101e,
+            wireframe: false,
+            flatShading: true,
+            transparent: true,
+            opacity: 0.88,
+            shininess: 90
+          });
+          const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+          group3D.add(coreMesh);
+
+          // Enrejado exterior wireframe
+          const wireGeo = new THREE.IcosahedronGeometry(1.95, 2);
+          const wireMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.18
+          });
+          const wireMesh = new THREE.Mesh(wireGeo, wireMat);
+          group3D.add(wireMesh);
+
+          // Anillo orbital
+          const ringGeo = new THREE.TorusGeometry(2.3, 0.02, 16, 100);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: 0xe0549a,
+            transparent: true,
+            opacity: 0.35
+          });
+          const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+          ringMesh.rotation.x = Math.PI / 3;
+          group3D.add(ringMesh);
+
+          scene.add(group3D);
+
+          // Partículas orbitales
+          const particleCount = 280;
+          const particlesGeo = new THREE.BufferGeometry();
+          const particlePositions = new Float32Array(particleCount * 3);
+
+          for (let p = 0; p < particleCount * 3; p += 3) {
+            particlePositions[p] = (Math.random() - 0.5) * 16;
+            particlePositions[p + 1] = (Math.random() - 0.5) * 10;
+            particlePositions[p + 2] = (Math.random() - 0.5) * 10;
+          }
+          particlesGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+
+          const particleMat = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.05,
+            transparent: true,
+            opacity: 0.4
+          });
+          const particleSystem = new THREE.Points(particlesGeo, particleMat);
+          scene.add(particleSystem);
+
+          // Luces
+          const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+          scene.add(ambientLight);
+
+          const pointLight1 = new THREE.PointLight(0xe0549a, 2.5, 20);
+          pointLight1.position.set(4, 5, 4);
+          scene.add(pointLight1);
+
+          const pointLight2 = new THREE.PointLight(0x3fb8c9, 1.8, 20);
+          pointLight2.position.set(-4, -3, 3);
+          scene.add(pointLight2);
+
+          let targetX = 0, targetY = 0, targetZ = 0;
+          let targetScale = 1.15;
+          let targetColor = new THREE.Color(0xe0549a);
+          let currentRotSpeed = 0.005;
+
+          window.update3DWaypoint = function(wp) {
+            targetX = wp.pos[0];
+            targetY = wp.pos[1];
+            targetZ = wp.pos[2];
+            targetScale = wp.scale;
+            targetColor.setHex(wp.color);
+            currentRotSpeed = wp.rotSpeed;
+          };
+
+          let mouseNormX = 0;
+          let mouseNormY = 0;
+          window.addEventListener('mousemove', (e) => {
+            mouseNormX = (e.clientX / window.innerWidth - 0.5) * 2;
+            mouseNormY = (e.clientY / window.innerHeight - 0.5) * 2;
+          });
+
+          function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            group3D.rotation.y += currentRotSpeed;
+            group3D.rotation.x += currentRotSpeed * 0.4;
+            ringMesh.rotation.z += 0.003;
+            particleSystem.rotation.y += 0.0008;
+
+            group3D.position.x += (targetX + mouseNormX * 0.35 - group3D.position.x) * 0.06;
+            group3D.position.y += (targetY - mouseNormY * 0.25 - group3D.position.y) * 0.06;
+            group3D.position.z += (targetZ - group3D.position.z) * 0.06;
+
+            const scaleStep = (targetScale - group3D.scale.x) * 0.06;
+            group3D.scale.set(group3D.scale.x + scaleStep, group3D.scale.y + scaleStep, group3D.scale.z + scaleStep);
+
+            coreMat.color.lerp(targetColor, 0.05);
+            pointLight1.color.lerp(targetColor, 0.05);
+            ringMat.color.lerp(targetColor, 0.05);
+
+            renderer.render(scene, camera);
+          }
+          animate3D();
+
+          window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+          });
+
+        } catch (err) {
+          console.warn("Three.js no soportado o error WebGL:", err);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
