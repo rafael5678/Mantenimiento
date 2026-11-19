@@ -1734,41 +1734,97 @@ Monto: 10.000,01 &rarr; APROBADO_PARCIAL (10.000,00)</div>
 
           const group3D = new THREE.Group();
 
-          // Núcleo Icosaedro facetado
-          const coreGeo = new THREE.IcosahedronGeometry(1.6, 1);
+          // ==================================================================
+          // ESCUDO CIBERNÉTICO DE DEFENSA EN PROFUNDIDAD (CREDICHECK)
+          // Reemplaza la esfera por una arquitectura de escudo hexagonal multicapa
+          // con placas de blindaje, escáner perimetral y nodos de Quality Gates
+          // ==================================================================
+
+          // 1. Placa Base Hexagonal (Blindaje Primario)
+          const shieldBaseGeo = new THREE.CylinderGeometry(1.45, 1.45, 0.25, 6);
           const coreMat = new THREE.MeshPhongMaterial({
             color: 0x38bdf8,
-            emissive: 0x08182b,
+            emissive: 0x081e32,
             wireframe: false,
             flatShading: true,
             transparent: true,
             opacity: 0.88,
-            shininess: 90
+            shininess: 95
           });
-          const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-          group3D.add(coreMesh);
+          const shieldBaseMesh = new THREE.Mesh(shieldBaseGeo, coreMat);
+          shieldBaseMesh.rotation.x = Math.PI / 2.4;
+          group3D.add(shieldBaseMesh);
 
-          // Enrejado exterior wireframe
-          const wireGeo = new THREE.IcosahedronGeometry(1.95, 2);
-          const wireMat = new THREE.MeshBasicMaterial({
+          // 2. Núcleo Elevado de Validación (Capa de Reglas de Negocio)
+          const corePlateGeo = new THREE.CylinderGeometry(1.05, 1.05, 0.32, 6);
+          const corePlateMat = new THREE.MeshPhongMaterial({
             color: 0xffffff,
-            wireframe: true,
+            emissive: 0x0c2538,
+            wireframe: false,
+            flatShading: true,
             transparent: true,
-            opacity: 0.18
+            opacity: 0.92,
+            shininess: 100
           });
-          const wireMesh = new THREE.Mesh(wireGeo, wireMat);
-          group3D.add(wireMesh);
+          const corePlateMesh = new THREE.Mesh(corePlateGeo, corePlateMat);
+          corePlateMesh.rotation.x = Math.PI / 2.4;
+          group3D.add(corePlateMesh);
 
-          // Anillo orbital
-          const ringGeo = new THREE.TorusGeometry(2.3, 0.02, 16, 100);
-          const ringMat = new THREE.MeshBasicMaterial({
+          // 3. Enrejado Perimetral Wireframe (Capa de Detección de Defectos)
+          const wireGeo = new THREE.CylinderGeometry(1.78, 1.78, 0.3, 6);
+          const wireMat = new THREE.MeshBasicMaterial({
             color: 0x38bdf8,
+            wireframe: true,
             transparent: true,
             opacity: 0.35
           });
+          const wireMesh = new THREE.Mesh(wireGeo, wireMat);
+          wireMesh.rotation.x = Math.PI / 2.4;
+          group3D.add(wireMesh);
+
+          // 4. Anillo Hexagonal de Escaneo Perimetral (Quality Gates)
+          const ringGeo = new THREE.TorusGeometry(2.35, 0.022, 16, 6);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            transparent: true,
+            opacity: 0.45
+          });
           const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-          ringMesh.rotation.x = Math.PI / 3;
+          ringMesh.rotation.x = Math.PI / 2.4;
           group3D.add(ringMesh);
+
+          // 5. Nodos Satélite Orbitantes (4 Quality Gates & Defensas: Unit, Contrato, Sonar, CD)
+          const satGroup = new THREE.Group();
+          satGroup.rotation.x = Math.PI / 2.4;
+          const satNodes = [];
+          const nodeGeo = new THREE.BoxGeometry(0.16, 0.16, 0.16);
+          const nodeWireGeo = new THREE.BoxGeometry(0.24, 0.24, 0.24);
+
+          for (let i = 0; i < 4; i++) {
+            const angle = (i * Math.PI) / 2;
+            const satPivot = new THREE.Group();
+            
+            const nodeMesh = new THREE.Mesh(nodeGeo, new THREE.MeshPhongMaterial({
+              color: 0x38bdf8,
+              emissive: 0x0f3450,
+              shininess: 90
+            }));
+            const nodeWire = new THREE.Mesh(nodeWireGeo, new THREE.MeshBasicMaterial({
+              color: 0xffffff,
+              wireframe: true,
+              transparent: true,
+              opacity: 0.5
+            }));
+            
+            nodeMesh.position.set(Math.cos(angle) * 2.35, Math.sin(angle) * 2.35, 0);
+            nodeWire.position.copy(nodeMesh.position);
+            
+            satPivot.add(nodeMesh);
+            satPivot.add(nodeWire);
+            satNodes.push({ mesh: nodeMesh, wire: nodeWire });
+            satGroup.add(satPivot);
+          }
+          group3D.add(satGroup);
 
           scene.add(group3D);
 
@@ -1829,11 +1885,20 @@ Monto: 10.000,01 &rarr; APROBADO_PARCIAL (10.000,00)</div>
           function animate3D() {
             requestAnimationFrame(animate3D);
 
-            group3D.rotation.y += currentRotSpeed;
-            group3D.rotation.x += currentRotSpeed * 0.4;
-            ringMesh.rotation.z += 0.003;
-            particleSystem.rotation.y += 0.0008;
+            const time = Date.now() * 0.001;
+            // Balanceo flotante controlado para mantener la geometría del escudo siempre reconocible
+            group3D.rotation.y = Math.sin(time * 0.6) * 0.24;
+            group3D.rotation.x = 0.15 + Math.cos(time * 0.5) * 0.1;
 
+            // Rotaciones de capas de blindaje y escaneo
+            satGroup.rotation.z += 0.007;
+            ringMesh.rotation.z -= 0.004;
+            wireMesh.rotation.z += 0.0025;
+            shieldBaseMesh.rotation.z += 0.002;
+            corePlateMesh.rotation.z += 0.002;
+            particleSystem.rotation.y += 0.0006;
+
+            // Posicionamiento suave y seguimiento de cursor
             group3D.position.x += (targetX + mouseNormX * 0.35 - group3D.position.x) * 0.06;
             group3D.position.y += (targetY - mouseNormY * 0.25 - group3D.position.y) * 0.06;
             group3D.position.z += (targetZ - group3D.position.z) * 0.06;
@@ -1841,9 +1906,16 @@ Monto: 10.000,01 &rarr; APROBADO_PARCIAL (10.000,00)</div>
             const scaleStep = (targetScale - group3D.scale.x) * 0.06;
             group3D.scale.set(group3D.scale.x + scaleStep, group3D.scale.y + scaleStep, group3D.scale.z + scaleStep);
 
+            // Interpolación de colores temáticos por diapositiva
             coreMat.color.lerp(targetColor, 0.05);
-            pointLight1.color.lerp(targetColor, 0.05);
+            wireMat.color.lerp(targetColor, 0.05);
             ringMat.color.lerp(targetColor, 0.05);
+            pointLight1.color.lerp(targetColor, 0.05);
+            satNodes.forEach(node => {
+              node.mesh.material.color.lerp(targetColor, 0.05);
+              node.wire.rotation.x += 0.02;
+              node.wire.rotation.y += 0.02;
+            });
 
             renderer.render(scene, camera);
           }
@@ -1863,3 +1935,4 @@ Monto: 10.000,01 &rarr; APROBADO_PARCIAL (10.000,00)</div>
   </script>
 </body>
 </html>
+
